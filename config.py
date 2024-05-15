@@ -34,6 +34,9 @@ mp_face_mesh = mp.solutions.face_mesh
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 
+def placeholder_result_callback(result, unused_output_image, timestamp_ms):
+    pass
+
 # FaceLandmarker options and detector
 base_options = python.BaseOptions(model_asset_path=MODEL)
 options = vision.FaceLandmarkerOptions(
@@ -44,6 +47,6 @@ options = vision.FaceLandmarkerOptions(
     min_face_presence_confidence=MIN_FACE_PRESENCE_CONFIDENCE,
     min_tracking_confidence=MIN_TRACKING_CONFIDENCE,
     output_face_blendshapes=True,
-    result_callback=None  # Will be set in face_detect.py
+    result_callback=placeholder_result_callback
 )
 detector = vision.FaceLandmarker.create_from_options(options)
