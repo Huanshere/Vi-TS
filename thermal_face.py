@@ -41,7 +41,13 @@ def run():
         print(f"imdata shape: {imdata.shape}, data type: {imdata.dtype}")
         
         bgr = cv2.convertScaleAbs(imdata, alpha=alpha, beta=beta)  # 直接使用imdata而不转换颜色空间
-        bgr = cv2.resize(bgr, (WIDTH, HEIGHT))
+        # 计算调整后的宽度和高度,保持原始的宽高比
+        original_height, original_width = imdata.shape[:2]
+        aspect_ratio = original_width / original_height
+        new_height = HEIGHT
+        new_width = int(new_height * aspect_ratio)
+        
+        bgr = cv2.resize(bgr, (new_width, new_height))
         heatmap = cv2.applyColorMap(bgr, color_map)
 
         rgb_frame = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB)
