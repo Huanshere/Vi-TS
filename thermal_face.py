@@ -13,7 +13,7 @@ from config import (
 
 # 添加颜色映射和对比度的变量
 color_map = cv2.COLORMAP_JET
-alpha = 0.7
+alpha = 1.0
 beta = 0
 
 def save_result(result, unused_output_image, timestamp_ms):
@@ -36,7 +36,9 @@ def run():
             break
 
         frame = cv2.flip(frame, 1)
+        print(f"Frame shape: {frame.shape}, data type: {frame.dtype}")  # 检查frame的形状和数据类型
         imdata, thdata = np.array_split(frame, 2)
+        print(f"imdata shape: {imdata.shape}, data type: {imdata.dtype}")  # 检查imdata的形状和数据类型
         bgr = cv2.cvtColor(imdata, cv2.COLOR_YUV2BGR_YUYV)
         bgr = cv2.convertScaleAbs(bgr, alpha=alpha, beta=beta)
         bgr = cv2.resize(bgr, (WIDTH, HEIGHT))
@@ -59,7 +61,7 @@ def run():
                     for landmark in face_landmarks
                 ])
 
-                # 获取额头的位置 注意是相反的 thdata是192x256的而face_landmarks是256x192的
+                # 获取额头的位置 注意x y相反！
                 forehead_x = int(face_landmarks[10].y * WIDTH)
                 forehead_y = int(face_landmarks[10].x * HEIGHT)
 
