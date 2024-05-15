@@ -46,7 +46,7 @@ options = vision.FaceLandmarkerOptions(
     min_face_detection_confidence=MIN_FACE_DETECTION_CONFIDENCE,
     min_face_presence_confidence=MIN_FACE_PRESENCE_CONFIDENCE,
     min_tracking_confidence=MIN_TRACKING_CONFIDENCE,
-    output_face_blendshapes=True,
+    # output_face_blendshapes=True,
     result_callback=placeholder_result_callback
 )
 detector = vision.FaceLandmarker.create_from_options(options)

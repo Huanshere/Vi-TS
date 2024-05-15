@@ -79,39 +79,6 @@ def run():
                     connection_drawing_spec=mp_drawing_styles.get_default_face_mesh_iris_connections_style()
                 )
 
-        current_frame = cv2.copyMakeBorder(
-            current_frame, 0, 0, 0, LABEL_PADDING_WIDTH,
-            cv2.BORDER_CONSTANT, None, LABEL_BACKGROUND_COLOR
-        )
-
-        if DETECTION_RESULT:
-            legend_x = current_frame.shape[1] - LABEL_PADDING_WIDTH + 20
-            legend_y = 30
-            bar_max_width = LABEL_PADDING_WIDTH - 40
-            bar_height = 8
-            gap_between_bars = 5
-            text_gap = 5
-
-            face_blendshapes = DETECTION_RESULT.face_blendshapes
-
-            if face_blendshapes:
-                for category in face_blendshapes[0]:
-                    category_name = category.category_name
-                    score = round(category.score, 2)
-
-                    text = f"{category_name} ({score:.2f})"
-                    (text_width, _), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
-
-                    cv2.putText(current_frame, text, (legend_x, legend_y + (bar_height // 2) + 5),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 0), 1, cv2.LINE_AA)
-
-                    bar_width = int(bar_max_width * score)
-                    cv2.rectangle(current_frame, (legend_x + text_width + text_gap, legend_y),
-                                  (legend_x + text_width + text_gap + bar_width, legend_y + bar_height),
-                                  (0, 255, 0), -1)
-
-                    legend_y += (bar_height + gap_between_bars)
-
         cv2.imshow('face_landmarker', current_frame)
 
         if cv2.waitKey(1) == 27:
