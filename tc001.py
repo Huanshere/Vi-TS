@@ -11,7 +11,7 @@ alpha = 1.0
 rad = 0
 
 # 定义颜色映射选项
-color_maps = [cv2.COLORMAP_JET, cv2.COLORMAP_COOL, cv2.COLORMAP_GRAY]
+color_maps = [cv2.COLORMAP_JET, cv2.COLORMAP_BONE]
 color_map_index = 0
 
 while(cap.isOpened()):
