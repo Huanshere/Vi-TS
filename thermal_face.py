@@ -5,13 +5,12 @@ import numpy as np
 import mediapipe as mp
 from mediapipe.framework.formats import landmark_pb2
 from config import (
-    COUNTER, FPS, START_TIME, DETECTION_RESULT, CAMERA_ID, WIDTH, HEIGHT, ROW_SIZE,
+    COUNTER, FPS, START_TIME, DETECTION_RESULT, CAMERA_ID, ROW_SIZE,
     LEFT_MARGIN, TEXT_COLOR, FONT_SIZE, FONT_THICKNESS, FPS_AVG_FRAME_COUNT,
-    LABEL_BACKGROUND_COLOR, LABEL_PADDING_WIDTH, mp_face_mesh, mp_drawing,
-    mp_drawing_styles, options, detector
+    mp_face_mesh, mp_drawing,mp_drawing_styles, options, detector
 )
 
-def save_result(result, unused_output_image, timestamp_ms):
+def save_result(result):
     global FPS, COUNTER, START_TIME, DETECTION_RESULT
     if COUNTER % FPS_AVG_FRAME_COUNT == 0:
         FPS = FPS_AVG_FRAME_COUNT / (time.time() - START_TIME)
@@ -61,20 +60,18 @@ def run():
                     connection_drawing_spec=mp_drawing_styles.get_default_face_mesh_tesselation_style()
                 )
 
-                def get_landmark_temp(landmark_id, face_landmarks, heatmap, thdata, WIDTH, HEIGHT, ):
-                    # Find landmark region
+                def get_landmark_temp(landmark_id, face_landmarks, heatmap, thdata):
                     landmark = face_landmarks[landmark_id]
                     HEIGHT, WIDTH, _ = heatmap.shape
                     x, y = int(landmark.x * WIDTH), int(landmark.y * HEIGHT)
                     temp = (thdata[y][x][0] + thdata[y][x][1] * 256) / 64 - 273.15
                     temp = round(temp, 2)
-                
                     cv2.circle(heatmap, (x, y), 5, (255, 255, 255), -1)
                     cv2.putText(heatmap, str(temp) + ' C', (x + 10, y - 10),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
                     
                     return temp
-                get_landmark_temp(10, face_landmarks, heatmap, thdata, WIDTH, HEIGHT, )
+                get_landmark_temp(10, face_landmarks, heatmap, thdata)
                 
 
         cv2.imshow('Thermal Face Landmarker', heatmap)
