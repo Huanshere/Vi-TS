@@ -35,7 +35,7 @@ def run():
         bgr = cv2.convertScaleAbs(bgr, alpha=0.6)
         heatmap = cv2.applyColorMap(bgr, cv2.COLORMAP_BONE)
 
-        print(thdata.shape,heatmap.shape)
+        print(thdata.shape,heatmap.shape) # result (192, 256, 2) (192, 256, 3)
 
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=heatmap)
         detector.detect_async(mp_image, time.time_ns() // 1_000_000)
@@ -61,22 +61,11 @@ def run():
                     connection_drawing_spec=mp_drawing_styles.get_default_face_mesh_tesselation_style()
                 )
 
-                # # Find forehead region
-                # forehead_landmark = face_landmarks[10]
-                # x, y = int(forehead_landmark.x * WIDTH), int(forehead_landmark.y * HEIGHT)
-                # temp_x, temp_y = x, y 
-                # temp = (thdata[temp_y][temp_x][0] + thdata[temp_y][temp_x][1] * 256) / 64 - 273.15
-                # temp = round(temp, 2)
-
-                # cv2.circle(heatmap, (x, y), 5, (255, 255, 255), -1)
-                # cv2.putText(heatmap, str(temp) + ' C', (x + 10, y - 10),
-                #             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
                 def get_landmark_temp(landmark_id, face_landmarks, heatmap, thdata, WIDTH, HEIGHT, ):
                     # Find landmark region
                     landmark = face_landmarks[landmark_id]
                     x, y = int(landmark.x * WIDTH), int(landmark.y * HEIGHT)
-                    print(x, y)
-                    temp = (thdata[x][y][0] + thdata[x][y][1] * 256) / 64 - 273.15
+                    temp = (thdata[y][x][0] + thdata[y][x][1] * 256) / 64 - 273.15
                     temp = round(temp, 2)
                 
                     cv2.circle(heatmap, (x, y), 5, (255, 255, 255), -1)
