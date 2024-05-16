@@ -21,7 +21,7 @@ def save_result(result, unused_output_image, timestamp_ms):
 
 def run():
     options.result_callback = save_result
-    cap = cv2.VideoCapture('/dev/video2', cv2.CAP_V4L)
+    cap = cv2.VideoCapture('/dev/video' + str(CAMERA_ID), cv2.CAP_V4L)
     cap.set(cv2.CAP_PROP_CONVERT_RGB, 0.0)
 
     while cap.isOpened():
@@ -73,6 +73,7 @@ def run():
                     # Find landmark region
                     landmark = face_landmarks[landmark_id]
                     x, y = int(landmark.x * WIDTH), int(landmark.y * HEIGHT)
+                    print(x, y)
                     temp = (thdata[x][y][0] + thdata[x][y][1] * 256) / 64 - 273.15
                     temp = round(temp, 2)
                 
