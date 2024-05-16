@@ -31,9 +31,13 @@ def run():
             break
 
         frame = cv2.flip(frame, 1)
-        frame = cv2.resize(frame, (WIDTH, HEIGHT))
+        frame = cv2.resize(frame, (WIDTH, HEIGHT))  #uneeded
 
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        # 调整对比度
+        alpha = 1.5  # Contrast control (1.0-3.0)
+        rgb_frame = cv2.convertScaleAbs(rgb_frame, alpha=alpha)
+
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_frame)
         detector.detect_async(mp_image, time.time_ns() // 1_000_000)
 
@@ -45,10 +49,7 @@ def run():
         if DETECTION_RESULT:
             for face_landmarks in DETECTION_RESULT.face_landmarks:
                 face_landmarks_proto = landmark_pb2.NormalizedLandmarkList()
-                face_landmarks_proto.landmark.extend([
-                    landmark_pb2.NormalizedLandmark(x=landmark.x, y=landmark.y, z=landmark.z)
-                    for landmark in face_landmarks
-                ])
+                face_landmarks_proto.landmark.extend([landmark_pb2.NormalizedLandmark(x=landmark.x, y=landmark.y, z=landmark.z) for landmark in face_landmarks])
                 mp_drawing.draw_landmarks(
                     image=frame,
                     landmark_list=face_landmarks_proto,
@@ -56,20 +57,7 @@ def run():
                     landmark_drawing_spec=None,
                     connection_drawing_spec=mp_drawing_styles.get_default_face_mesh_tesselation_style()
                 )
-                # mp_drawing.draw_landmarks(
-                #     image=frame,
-                #     landmark_list=face_landmarks_proto,
-                #     connections=mp_face_mesh.FACEMESH_CONTOURS,
-                #     landmark_drawing_spec=None,
-                #     connection_drawing_spec=mp_drawing_styles.get_default_face_mesh_contours_style()
-                # )
-                # mp_drawing.draw_landmarks(
-                #     image=frame,
-                #     landmark_list=face_landmarks_proto,
-                #     connections=mp_face_mesh.FACEMESH_IRISES,
-                #     landmark_drawing_spec=None,
-                #     connection_drawing_spec=mp_drawing_styles.get_default_face_mesh_iris_connections_style()
-                # )
+
 
         cv2.imshow('face_landmarker', frame)
         if cv2.waitKey(1) == 27:
