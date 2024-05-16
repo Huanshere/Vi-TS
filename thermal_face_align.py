@@ -16,14 +16,14 @@ def save_result(result, unused_output_image, timestamp_ms):
     DETECTION_RESULT = result
     COUNTER += 1
 
-def get_forehead_temperature(thdata, face_landmarks):
+def get_forehead_temperature(thdata, face_landmarks, frame_height, frame_width):
     # 获取额头节点的坐标
     forehead_landmark = face_landmarks[10]
-    x, y = int(forehead_landmark.x * 256), int(forehead_landmark.y * 192)
+    x, y = int(forehead_landmark.x * frame_width), int(forehead_landmark.y * frame_height)
 
     # 获取额头节点的温度
-    hi = thdata[y][x][0]
-    lo = thdata[y][x][1]
+    hi = thdata[y // 2][x // 2][0]
+    lo = thdata[y // 2][x // 2][1]
     lo = lo * 256
     rawtemp = hi + lo
     temp = (rawtemp / 64) - 273.15
@@ -36,18 +36,17 @@ def run():
     cap = cv2.VideoCapture(CAMERA_ID)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, WIDTH)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, HEIGHT)
-    cap.set(cv2.CAP_PROP_CONVERT_RGB, 0.0)  # 添加这一行来禁用自动RGB转换
 
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             break
 
-        imdata, thdata = np.array_split(frame, 2)  # 分割图像和温度数据
+        frame_height, frame_width, _ = frame.shape
+        imdata, thdata = np.array_split(frame, 2)
 
-        rgb_frame = cv2.cvtColor(imdata, cv2.COLOR_YUV2BGR_YUYV)  # 将YUV格式转换为BGR格式
+        rgb_frame = cv2.cvtColor(imdata, cv2.COLOR_YUV2BGR_YUYV)
         rgb_frame = cv2.flip(rgb_frame, 1)
-        rgb_frame = cv2.resize(rgb_frame, (WIDTH, HEIGHT))
 
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_frame)
         detector.detect_async(mp_image, time.time_ns() // 1_000_000)
@@ -62,7 +61,7 @@ def run():
                 face_landmarks_proto.landmark.extend([landmark_pb2.NormalizedLandmark(x=landmark.x, y=landmark.y, z=landmark.z) for landmark in face_landmarks])
                 
                 # 获取额头节点的温度并在图像上显示
-                forehead_temp = get_forehead_temperature(thdata, face_landmarks)
+                forehead_temp = get_forehead_temperature(thdata, face_landmarks, frame_height, frame_width)
                 temp_text = 'Forehead Temp: {:.1f}°C'.format(forehead_temp)
                 temp_location = (LEFT_MARGIN, ROW_SIZE * 2)
                 cv2.putText(rgb_frame, temp_text, temp_location, cv2.FONT_HERSHEY_DUPLEX, FONT_SIZE, TEXT_COLOR, FONT_THICKNESS, cv2.LINE_AA)
