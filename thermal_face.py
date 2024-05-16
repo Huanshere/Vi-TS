@@ -7,16 +7,30 @@ from mediapipe.framework.formats import landmark_pb2
 from config import (
     COUNTER, FPS, START_TIME, DETECTION_RESULT, CAMERA_ID, ROW_SIZE,
     LEFT_MARGIN, TEXT_COLOR, FONT_SIZE, FONT_THICKNESS, FPS_AVG_FRAME_COUNT,
-    mp_face_mesh, mp_drawing,mp_drawing_styles, options, detector
+    mp_face_mesh, mp_drawing,mp_drawing_styles, options, detector,
+    save_result,get_landmark_temp
 )
 
-def save_result(result, unused_output_image, timestamp_ms):
-    global FPS, COUNTER, START_TIME, DETECTION_RESULT
-    if COUNTER % FPS_AVG_FRAME_COUNT == 0:
-        FPS = FPS_AVG_FRAME_COUNT / (time.time() - START_TIME)
-        START_TIME = time.time()
-    DETECTION_RESULT = result
-    COUNTER += 1
+# def save_result(result, unused_output_image, timestamp_ms):
+#     global FPS, COUNTER, START_TIME, DETECTION_RESULT
+#     if COUNTER % FPS_AVG_FRAME_COUNT == 0:
+#         FPS = FPS_AVG_FRAME_COUNT / (time.time() - START_TIME)
+#         START_TIME = time.time()
+#     DETECTION_RESULT = result
+#     COUNTER += 1
+
+# def get_landmark_temp(landmark_id, face_landmarks, heatmap, thdata):
+#     # Find landmark region
+#     landmark = face_landmarks[landmark_id]
+#     HEIGHT, WIDTH, _ = heatmap.shape
+#     x, y = int(landmark.x * WIDTH), int(landmark.y * HEIGHT)
+#     temp = (thdata[y][x][0] + thdata[y][x][1] * 256) / 64 - 273.15
+#     temp = round(temp, 2)
+
+#     cv2.circle(heatmap, (x, y), 5, (255, 255, 255), -1)
+#     cv2.putText(heatmap, str(temp) + ' C', (x + 10, y - 10),
+#                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+#     return temp
 
 def run():
     options.result_callback = save_result
@@ -33,8 +47,6 @@ def run():
         bgr = cv2.cvtColor(imdata, cv2.COLOR_YUV2BGR_YUYV)
         bgr = cv2.convertScaleAbs(bgr, alpha=0.6)
         heatmap = cv2.applyColorMap(bgr, cv2.COLORMAP_BONE)
-
-        print(thdata.shape,heatmap.shape) # result (192, 256, 2) (192, 256, 3)
 
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=heatmap)
         detector.detect_async(mp_image, time.time_ns() // 1_000_000)
@@ -60,19 +72,7 @@ def run():
                     connection_drawing_spec=mp_drawing_styles.get_default_face_mesh_tesselation_style()
                 )
 
-                def get_landmark_temp(landmark_id, face_landmarks, heatmap, thdata):
-                    # Find landmark region
-                    landmark = face_landmarks[landmark_id]
-                    HEIGHT, WIDTH, _ = heatmap.shape
-                    x, y = int(landmark.x * WIDTH), int(landmark.y * HEIGHT)
-                    temp = (thdata[y][x][0] + thdata[y][x][1] * 256) / 64 - 273.15
-                    temp = round(temp, 2)
-                
-                    cv2.circle(heatmap, (x, y), 5, (255, 255, 255), -1)
-                    cv2.putText(heatmap, str(temp) + ' C', (x + 10, y - 10),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-                    
-                    return temp
+
                 get_landmark_temp(10, face_landmarks, heatmap, thdata)
                 
 
