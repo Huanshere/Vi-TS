@@ -35,6 +35,8 @@ def run():
         bgr = cv2.convertScaleAbs(bgr, alpha=0.6)
         heatmap = cv2.applyColorMap(bgr, cv2.COLORMAP_BONE)
 
+        print(thdata.shapem,heatmap.shape)
+        
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=heatmap)
         detector.detect_async(mp_image, time.time_ns() // 1_000_000)
 
