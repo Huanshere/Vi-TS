@@ -35,7 +35,7 @@ def run():
 
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-        # 调整对比度 uneeded
+        # 调整对比度 不需要
         # alpha = 1.5  # Contrast control (1.0-3.0)
         # rgb_frame = cv2.convertScaleAbs(rgb_frame, alpha=alpha)
 
