@@ -4,33 +4,21 @@ import cv2
 import numpy as np
 import mediapipe as mp
 from mediapipe.framework.formats import landmark_pb2
+
 from config import (
     COUNTER, FPS, START_TIME, DETECTION_RESULT, CAMERA_ID, ROW_SIZE,
     LEFT_MARGIN, TEXT_COLOR, FONT_SIZE, FONT_THICKNESS, FPS_AVG_FRAME_COUNT,
     mp_face_mesh, mp_drawing,mp_drawing_styles, options, detector,
-    save_result,get_landmark_temp
+    get_landmark_temp
 )
 
-# def save_result(result, unused_output_image, timestamp_ms):
-#     global FPS, COUNTER, START_TIME, DETECTION_RESULT
-#     if COUNTER % FPS_AVG_FRAME_COUNT == 0:
-#         FPS = FPS_AVG_FRAME_COUNT / (time.time() - START_TIME)
-#         START_TIME = time.time()
-#     DETECTION_RESULT = result
-#     COUNTER += 1
-
-# def get_landmark_temp(landmark_id, face_landmarks, heatmap, thdata):
-#     # Find landmark region
-#     landmark = face_landmarks[landmark_id]
-#     HEIGHT, WIDTH, _ = heatmap.shape
-#     x, y = int(landmark.x * WIDTH), int(landmark.y * HEIGHT)
-#     temp = (thdata[y][x][0] + thdata[y][x][1] * 256) / 64 - 273.15
-#     temp = round(temp, 2)
-
-#     cv2.circle(heatmap, (x, y), 5, (255, 255, 255), -1)
-#     cv2.putText(heatmap, str(temp) + ' C', (x + 10, y - 10),
-#                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-#     return temp
+def save_result(result, unused_output_image, timestamp_ms):
+    global FPS, COUNTER, START_TIME, DETECTION_RESULT
+    if COUNTER % FPS_AVG_FRAME_COUNT == 0:
+        FPS = FPS_AVG_FRAME_COUNT / (time.time() - START_TIME)
+        START_TIME = time.time()
+    DETECTION_RESULT = result
+    COUNTER += 1
 
 def run():
     options.result_callback = save_result
@@ -72,10 +60,8 @@ def run():
                     connection_drawing_spec=mp_drawing_styles.get_default_face_mesh_tesselation_style()
                 )
 
-
                 get_landmark_temp(10, face_landmarks, heatmap, thdata)
                 
-
         cv2.imshow('Thermal Face Landmarker', heatmap)
         if cv2.waitKey(1) == 27:
             break

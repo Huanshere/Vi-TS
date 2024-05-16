@@ -2,7 +2,6 @@ import cv2
 import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
-import time
 
 # Global variables
 COUNTER = 0
@@ -47,14 +46,6 @@ options = vision.FaceLandmarkerOptions(
     result_callback=placeholder_result_callback
 )
 detector = vision.FaceLandmarker.create_from_options(options)
-
-def save_result(result, unused_output_image, timestamp_ms):
-    global FPS, COUNTER, START_TIME, DETECTION_RESULT
-    if COUNTER % FPS_AVG_FRAME_COUNT == 0:
-        FPS = FPS_AVG_FRAME_COUNT / (time.time() - START_TIME)
-        START_TIME = time.time()
-    DETECTION_RESULT = result
-    COUNTER += 1
     
 def get_landmark_temp(landmark_id, face_landmarks, heatmap, thdata):
     # Find landmark region
