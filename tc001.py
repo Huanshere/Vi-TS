@@ -2,7 +2,7 @@
 import cv2
 import numpy as np
 
-dev = 0
+dev = 2
 cap = cv2.VideoCapture('/dev/video'+str(dev), cv2.CAP_V4L)
 cap.set(cv2.CAP_PROP_CONVERT_RGB, 0.0)
 width = 256
