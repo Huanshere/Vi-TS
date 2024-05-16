@@ -56,14 +56,28 @@ def run():
                     landmark_drawing_spec=None,
                     connection_drawing_spec=mp_drawing_styles.get_default_face_mesh_tesselation_style()
                 )
+                # mp_drawing.draw_landmarks(
+                #     image=frame,
+                #     landmark_list=face_landmarks_proto,
+                #     connections=mp_face_mesh.FACEMESH_CONTOURS,
+                #     landmark_drawing_spec=None,
+                #     connection_drawing_spec=mp_drawing_styles.get_default_face_mesh_contours_style()
+                # )
+                # mp_drawing.draw_landmarks(
+                #     image=frame,
+                #     landmark_list=face_landmarks_proto,
+                #     connections=mp_face_mesh.FACEMESH_IRISES,
+                #     landmark_drawing_spec=None,
+                #     connection_drawing_spec=mp_drawing_styles.get_default_face_mesh_iris_connections_style()
+                # )
 
         cv2.imshow('face_landmarker', frame)
         if cv2.waitKey(1) == 27:
             break
 
-        detector.close()
-        cap.release()
-        cv2.destroyAllWindows()
+    detector.close()
+    cap.release()
+    cv2.destroyAllWindows()
 
 if __name__ == '__main__':
     run()
