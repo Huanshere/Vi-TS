@@ -45,8 +45,7 @@ def run():
         frame_height, frame_width, _ = frame.shape
         imdata, thdata = np.array_split(frame, 2)
 
-        rgb_frame = cv2.cvtColor(imdata, cv2.COLOR_YUV2BGR_YUYV)
-        rgb_frame = cv2.flip(rgb_frame, 1)
+        rgb_frame = cv2.flip(imdata, 1)
 
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_frame)
         detector.detect_async(mp_image, time.time_ns() // 1_000_000)
