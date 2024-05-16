@@ -64,8 +64,9 @@ def run():
                 def get_landmark_temp(landmark_id, face_landmarks, heatmap, thdata, WIDTH, HEIGHT, ):
                     # Find landmark region
                     landmark = face_landmarks[landmark_id]
-                    y, x = int(landmark.x * WIDTH), int(landmark.y * HEIGHT)
-                    temp = (thdata[x][y][0] + thdata[x][y][1] * 256) / 64 - 273.15
+                    HEIGHT, WIDTH, _ = heatmap.shape
+                    x, y = int(landmark.x * WIDTH), int(landmark.y * HEIGHT)
+                    temp = (thdata[y][x][0] + thdata[y][x][1] * 256) / 64 - 273.15
                     temp = round(temp, 2)
                 
                     cv2.circle(heatmap, (x, y), 5, (255, 255, 255), -1)
