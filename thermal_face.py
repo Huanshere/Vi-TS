@@ -1,14 +1,14 @@
-#!/usr/bin/env python3
+import sys
+import time
 import cv2
 import numpy as np
-import time
 import mediapipe as mp
 from mediapipe.framework.formats import landmark_pb2
 from config import (
-    COUNTER, FPS, START_TIME, DETECTION_RESULT, CAMERA_ID, WIDTH, HEIGHT,
-    ROW_SIZE, LEFT_MARGIN, TEXT_COLOR, FONT_SIZE, FONT_THICKNESS,
-    FPS_AVG_FRAME_COUNT, LABEL_BACKGROUND_COLOR, LABEL_PADDING_WIDTH,
-    mp_face_mesh, mp_drawing, mp_drawing_styles, options, detector
+    COUNTER, FPS, START_TIME, DETECTION_RESULT, CAMERA_ID, WIDTH, HEIGHT, ROW_SIZE,
+    LEFT_MARGIN, TEXT_COLOR, FONT_SIZE, FONT_THICKNESS, FPS_AVG_FRAME_COUNT,
+    LABEL_BACKGROUND_COLOR, LABEL_PADDING_WIDTH, mp_face_mesh, mp_drawing,
+    mp_drawing_styles, options, detector
 )
 
 def save_result(result, unused_output_image, timestamp_ms):
@@ -21,46 +21,58 @@ def save_result(result, unused_output_image, timestamp_ms):
 
 def run():
     options.result_callback = save_result
-    cap = cv2.VideoCapture(CAMERA_ID)
+    cap = cv2.VideoCapture('/dev/video2', cv2.CAP_V4L)
+    cap.set(cv2.CAP_PROP_CONVERT_RGB, 0.0)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, WIDTH)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, HEIGHT)
 
     while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            break
+        success, frame = cap.read()
+        if not success:
+            sys.exit('ERROR: Unable to read from thermal camera.')
 
-        frame = cv2.flip(frame, 1)
-        frame = cv2.resize(frame, (WIDTH, HEIGHT))  #uneeded
+        imdata, thdata = np.array_split(frame, 2)
+        bgr = cv2.cvtColor(imdata, cv2.COLOR_YUV2BGR_YUYV)
+        bgr = cv2.convertScaleAbs(bgr, alpha=1.0)
+        bgr = cv2.resize(bgr, (WIDTH, HEIGHT), interpolation=cv2.INTER_CUBIC)
+        heatmap = cv2.applyColorMap(bgr, cv2.COLORMAP_BONE)
 
-        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-        # 调整对比度 不需要
-        # alpha = 1.5  # Contrast control (1.0-3.0)
-        # rgb_frame = cv2.convertScaleAbs(rgb_frame, alpha=alpha)
-
-        mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_frame)
+        mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=heatmap)
         detector.detect_async(mp_image, time.time_ns() // 1_000_000)
 
         fps_text = 'FPS = {:.1f}'.format(FPS)
         text_location = (LEFT_MARGIN, ROW_SIZE)
-        cv2.putText(frame, fps_text, text_location, cv2.FONT_HERSHEY_DUPLEX,
+        cv2.putText(heatmap, fps_text, text_location, cv2.FONT_HERSHEY_DUPLEX,
                     FONT_SIZE, TEXT_COLOR, FONT_THICKNESS, cv2.LINE_AA)
 
         if DETECTION_RESULT:
             for face_landmarks in DETECTION_RESULT.face_landmarks:
                 face_landmarks_proto = landmark_pb2.NormalizedLandmarkList()
-                face_landmarks_proto.landmark.extend([landmark_pb2.NormalizedLandmark(x=landmark.x, y=landmark.y, z=landmark.z) for landmark in face_landmarks])
+                face_landmarks_proto.landmark.extend([
+                    landmark_pb2.NormalizedLandmark(x=landmark.x, y=landmark.y, z=landmark.z)
+                    for landmark in face_landmarks
+                ])
+
                 mp_drawing.draw_landmarks(
-                    image=frame,
+                    image=heatmap,
                     landmark_list=face_landmarks_proto,
                     connections=mp_face_mesh.FACEMESH_TESSELATION,
                     landmark_drawing_spec=None,
                     connection_drawing_spec=mp_drawing_styles.get_default_face_mesh_tesselation_style()
                 )
 
+                # Find forehead region
+                forehead_landmark = face_landmarks[10]
+                x, y = int(forehead_landmark.x * WIDTH), int(forehead_landmark.y * HEIGHT)
+                temp_y, temp_x = y, x // 2
+                temp = (thdata[temp_y][temp_x][0] + thdata[temp_y][temp_x][1] * 256) / 64 - 273.15
+                temp = round(temp, 2)
 
-        cv2.imshow('face_landmarker', frame)
+                cv2.circle(heatmap, (x, y), 5, (255, 255, 255), -1)
+                cv2.putText(heatmap, str(temp) + ' C', (x + 10, y - 10),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+
+        cv2.imshow('Thermal Face Landmarker', heatmap)
         if cv2.waitKey(1) == 27:
             break
 
