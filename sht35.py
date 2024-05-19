@@ -32,4 +32,4 @@ def read_sht35_data(cmd=SHT35_CMD_READ_HIGH):
 while True:
     temperature, humidity = read_sht35_data()
     print(f"Temperature: {temperature:.2f}°C, Humidity: {humidity:.2f}%")
-    time.sleep(1)
+    time.sleep(15)
