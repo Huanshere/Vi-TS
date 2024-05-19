@@ -1,4 +1,5 @@
 #!/bin/bash
+sudo apt install code
 python3 -m venv venv
 source venv/bin/activate
 python3 -m pip install --upgrade pip
