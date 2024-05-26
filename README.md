@@ -3,4 +3,4 @@
 安装环境方法：
 bash setup.sh
 
-TODO：已完成了thermal in face detect 接下来是1. 对齐温度数据 2.色彩空间重映射 对比度调整
+TODO：minicpm llama3 v 2.5 可以识别衣服 然后再用phi3B换算热阻？
