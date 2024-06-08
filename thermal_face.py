@@ -66,9 +66,33 @@ def run():
                     connection_drawing_spec=mp_drawing_styles.get_default_face_mesh_tesselation_style()
                 )
 
+                # 定义节点名称
+                face_keypoints = {
+                    0: "Nose",
+                    1: "Left Eye",
+                    2: "Right Eye",
+                    3: "Left Ear",
+                    4: "Right Ear"
+                    # 添加其他需要的节点
+                }
+
                 # 获取面部温度
-                get_landmark_temp(10, face_landmarks, heatmap, thdata)
-                
+                for keypoint_id, keypoint_name in face_keypoints.items():
+                    temp_avg, temp_matrix = get_landmark_temp(keypoint_id, face_landmarks, heatmap, thdata)
+
+                    # 保存结果到文件
+                    log_data = {
+                        "timestamp": time.time(),
+                        "temperature": temp_avg,
+                        "temperature_matrix": temp_matrix
+                    }
+                    log_dir = "log"
+                    if not os.path.exists(log_dir):
+                        os.makedirs(log_dir)
+                    log_file = os.path.join(log_dir, f"{keypoint_name}.json")
+
+                    with open(log_file, "a+") as f:
+                        f.write(json.dumps(log_data) + "\n")
         # 显示热图
         cv2.imshow('Thermal Face Landmarker', heatmap)
         if cv2.waitKey(1) == 27:
