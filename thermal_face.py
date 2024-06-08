@@ -10,7 +10,7 @@ from mediapipe.framework.formats import landmark_pb2
 from config import (
     COUNTER, FPS, START_TIME, DETECTION_RESULT, CAMERA_ID, ROW_SIZE,
     LEFT_MARGIN, TEXT_COLOR, FONT_SIZE, FONT_THICKNESS, FPS_AVG_FRAME_COUNT,
-    mp_face_mesh, mp_drawing,mp_drawing_styles, options, detector,
+    mp_face_mesh, mp_drawing,mp_drawing_styles, options, detector, GAP,
     get_landmark_temp
 )
 
