@@ -75,6 +75,11 @@ def run():
                 for keypoint_id, keypoint_name in face_keypoints.items():
                     temp_avg, temp_matrix = get_landmark_temp(keypoint_id, face_landmarks, heatmap, thdata)
 
+                    # Get the coordinates for placing the text
+                    landmark = face_landmarks[keypoint_id]
+                    HEIGHT, WIDTH, _ = heatmap.shape
+                    x, y = int(landmark.x * WIDTH), int(landmark.y * HEIGHT)
+
                     current_time = time.time()
                     if current_time - last_save_time >= GAP:
                         # Display the temperature on the heatmap
