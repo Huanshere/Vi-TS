@@ -58,7 +58,11 @@ def get_landmark_temp(landmark_id, face_landmarks, heatmap, thdata):
         row = []
         for j in range(-1, 2):
             tx, ty = x + j, y + i
-            temp = (thdata[ty][tx][0] + thdata[ty][tx][1] * 256) / 64 - 273.15
+            # 如果 tx 或 ty 超出范围，用中心值替代
+            if tx < 0 or tx >= WIDTH or ty < 0 or ty >= HEIGHT:
+                temp = (thdata[y][x][0] + thdata[y][x][1] * 256) / 64 - 273.15
+            else:
+                temp = (thdata[ty][tx][0] + thdata[ty][tx][1] * 256) / 64 - 273.15
             temp = round(temp, 2)
             row.append(temp)
         temp_matrix.append(row)
