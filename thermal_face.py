@@ -21,8 +21,10 @@ def save_result(result, unused_output_image, timestamp_ms):
         START_TIME = time.time()
     DETECTION_RESULT = result
     COUNTER += 1
+    return timestamp_ms
 
 def run():
+    last_save_time = time.time()
     options.result_callback = save_result
     # 打开摄像头
     cap = cv2.VideoCapture('/dev/video' + str(CAMERA_ID), cv2.CAP_V4L)
@@ -73,18 +75,21 @@ def run():
                 for keypoint_id, keypoint_name in face_keypoints.items():
                     temp_avg, temp_matrix = get_landmark_temp(keypoint_id, face_landmarks, heatmap, thdata)
 
-                    log_data = {
-                        "timestamp": time.time(),
-                        "temperature": temp_avg,
-                        "temperature_matrix": temp_matrix
-                    }
-                    log_dir = "log"
-                    if not os.path.exists(log_dir):
-                        os.makedirs(log_dir)
-                    log_file = os.path.join(log_dir, f"{keypoint_name}.json")
+                    current_time = time.time()
+                    if current_time - last_save_time >= GAP:
+                        log_data = {
+                            "timestamp": current_time,
+                            "temperature": temp_avg,
+                            "temperature_matrix": temp_matrix
+                        }
+                        log_dir = "log"
+                        if not os.path.exists(log_dir):
+                            os.makedirs(log_dir)
+                        log_file = os.path.join(log_dir, f"{keypoint_name}.json")
 
-                    with open(log_file, "a+") as f:
-                        f.write(json.dumps(log_data) + "\n")
+                        with open(log_file, "a+") as f:
+                            f.write(json.dumps(log_data) + "\n")
+                        last_save_time = current_time
                 
         # 显示热图
         cv2.imshow('Thermal Face Landmarker', heatmap)
