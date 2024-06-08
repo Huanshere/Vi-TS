@@ -77,6 +77,11 @@ def run():
 
                     current_time = time.time()
                     if current_time - last_save_time >= GAP:
+                        # Display the temperature on the heatmap
+                        temp_text = f"{keypoint_name}: {temp_avg} C"
+                        cv2.putText(heatmap, temp_text, (x, y), 
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+
                         log_data = {
                             "timestamp": current_time,
                             "temperature": temp_avg,
