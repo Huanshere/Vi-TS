@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# 执行 git pull
+echo "Updating from git repository..."
+git pull
+
 # 检查并安装 Python 3.11 和必要的包
 if ! command -v python3 &> /dev/null; then
     echo "Installing Python 3.11..."
