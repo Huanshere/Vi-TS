@@ -1,96 +1,69 @@
-def check_camera(cam_id):
-    """检查指定ID的摄像头并打印详细信息"""
-    try:
-        # 尝试打开摄像头
-        cap = cv2.VideoCapture(f'/dev/video{cam_id}')
-        
-        if not cap.isOpened():
-            print(f"摄像头 {cam_id}: 无法打开")
-            return False
-        
-        # 获取所有可用的摄像头属性
-        properties = {
-            'WIDTH': cv2.CAP_PROP_FRAME_WIDTH,
-            'HEIGHT': cv2.CAP_PROP_FRAME_HEIGHT,
-            'FPS': cv2.CAP_PROP_FPS,
-            'FORMAT': cv2.CAP_PROP_FORMAT,
-            'MODE': cv2.CAP_PROP_MODE,
-            'BRIGHTNESS': cv2.CAP_PROP_BRIGHTNESS
-        }
-        
-        print(f"\n📷 摄像头 {cam_id}:")
-        
-        # 获取并打印所有属性
-        for name, prop in properties.items():
-            value = cap.get(prop)
-            if value != -1:  # 某些属性可能不被支持
-                if name in ['WIDTH', 'HEIGHT']:
-                    print(f"- {name}: {int(value)}px")
-                elif name == 'FPS':
-                    print(f"- {name}: {value:.1f}")
-                else:
-                    print(f"- {name}: {value}")
-        
-        # 尝试读取一帧
-        ret, frame = cap.read()
-        if ret:
-            print("- 状态: ✅ 可以正常读取图像")
-            print(f"- 实际分辨率: {frame.shape[1]}x{frame.shape[0]}")
-            # 特别检查是否为256x384
-            if frame.shape[1] == 256 and frame.shape[0] == 384:
-                print("⚠️ 注意: 检测到256x384分辨率")
-        else:
-            print("- 状态: ❌ 无法读取图像")
-        
-        # 尝试设置不同的分辨率
-        test_resolutions = [
-            (256, 384),  # 特别关注的分辨率
-            (640, 480),
-            (1280, 720),
-            (1920, 1080),
-            (2560, 1440)
-        ]
-        
-        print("\n支持的分辨率:")
-        for width, height in test_resolutions:
-            cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
-            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+import cv2
+
+def check_specific_cameras():
+    """
+    检查前10个摄像头，寻找特定配置的两个摄像头
+    返回: 元组 (256x384摄像头ID, 640x480摄像头ID) 或在不满足条件时抛出异常
+    """
+    available_cams = []
+    
+    # 检查前10个摄像头
+    for cam_id in range(10):
+        try:
+            cap = cv2.VideoCapture(f'/dev/video{cam_id}')
+            if not cap.isOpened():
+                continue
+                
+            # 测试256x384
+            cap.set(cv2.CAP_PROP_FRAME_WIDTH, 256)
+            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 384)
             actual_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
             actual_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-            if actual_width == width and actual_height == height:
-                mark = "✅"
-                if width == 256 and height == 384:
-                    mark = "⭐"  # 特别标记256x384分辨率
-                print(f"{mark} {width}x{height}")
-            else:
-                print(f"❌ {width}x{height}")
+            
+            if actual_width == 256 and actual_height == 384:
+                available_cams.append((cam_id, "256x384"))
+                
+            # 测试640x480
+            cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+            actual_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            actual_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+            
+            if actual_width == 640 and actual_height == 480:
+                available_cams.append((cam_id, "640x480"))
+                
+            cap.release()
+            
+        except Exception:
+            continue
+    
+    # 检查结果
+    if len(available_cams) != 2:
+        raise Exception(f"需要恰好2个摄像头，但找到了 {len(available_cams)} 个")
         
-        # 释放摄像头
-        cap.release()
-        return True
+    # 确保一个是256x384，一个是640x480
+    cam_256x384 = None
+    cam_640x480 = None
+    
+    for cam_id, resolution in available_cams:
+        if resolution == "256x384":
+            cam_256x384 = cam_id
+        elif resolution == "640x480":
+            cam_640x480 = cam_id
+            
+    if cam_256x384 is None or cam_640x480 is None:
+        raise Exception("未找到所需的摄像头配置(需要一个256x384和一个640x480)")
         
-    except Exception as e:
-        print(f"摄像头 {cam_id}: 错误 - {str(e)}")
-        return False
+    return (cam_256x384, cam_640x480)
 
 def main():
-    print("🔍 正在扫描可用摄像头...\n")
-    
-    # 检查 /dev/video* 设备
-    video_devices = [f for f in os.listdir('/dev') if f.startswith('video')]
-    
-    if not video_devices:
-        print("❌ 未找到任何摄像头设备")
-        return
-    
-    print(f"📝 找到 {len(video_devices)} 个可能的视频设备")
-    
-    # 逐个检查摄像头
-    for device in sorted(video_devices):
-        cam_id = device.replace('video', '')
-        check_camera(int(cam_id))
+    try:
+        cam_small, cam_large = check_specific_cameras()
+        print(f"✅ 找到符合要求的摄像头:")
+        print(f"- 256x384摄像头: /dev/video{cam_small}")
+        print(f"- 640x480摄像头: /dev/video{cam_large}")
+    except Exception as e:
+        print(f"❌ 错误: {str(e)}")
 
 if __name__ == "__main__":
-    import cv2
-    import os
     main()
