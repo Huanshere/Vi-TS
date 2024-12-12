@@ -37,10 +37,13 @@ if [ "$answer" = "y" ]; then
     echo "Installing requirements..."
     python3 -m pip install --break-system-packages -r requirements.txt
 
+    # 创建 model 目录（如果不存在）
+    mkdir -p ./model
+
     # 检查人脸特征点检测模型是否存在
-    if [ ! -f "face_landmarker.task" ]; then
+    if [ ! -f "./model/face_landmarker.task" ]; then
         echo "Downloading face landmark model..."
-        wget -O face_landmarker.task -q https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task
+        wget -O ./model/face_landmarker.task -q https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task
     fi
 
 else
