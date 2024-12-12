@@ -1,10 +1,17 @@
 #!/bin/bash
 
-# 检查并安装 Python 3.11 (Debian 12 默认版本)
+# 检查并安装 Python 3.11 和必要的包
 if ! command -v python3 &> /dev/null; then
     echo "Installing Python 3.11..."
     sudo apt update
     sudo apt install -y python3 python3-venv python3-distutils
+fi
+
+# 确保安装 python3.11-venv
+if ! dpkg -l | grep -q python3.11-venv; then
+    echo "Installing python3.11-venv..."
+    sudo apt update
+    sudo apt install -y python3.11-venv
 fi
 
 # 检查 VS Code 是否已安装
