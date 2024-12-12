@@ -1,3 +1,7 @@
 mediapipe
 pythermalcomfort
-smbus
+openai==1.55.3
+requests
+rich
+smbus; sys_platform == 'linux'
+python-dotenv
