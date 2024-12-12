@@ -1,5 +1,6 @@
 import smbus
-import time
+import asyncio
+from rich import print as rprint
 
 # SHT35的I2C地址
 SHT35_ADDR = 0x44
@@ -12,12 +13,12 @@ SHT35_CMD_READ_LOW = 0x2C10
 # 创建I2C实例
 i2c = smbus.SMBus(1)
 
-def read_sht35_data(cmd=SHT35_CMD_READ_HIGH):
+async def read_sht35_data(cmd=SHT35_CMD_READ_HIGH):
     # 发送测量命令
     i2c.write_i2c_block_data(SHT35_ADDR, cmd >> 8, [cmd & 0xFF])
     
-    # 等待测量完成
-    time.sleep(0.1)
+    # 异步等待测量完成
+    await asyncio.sleep(0.1)
     
     # 读取6个字节的数据
     data = i2c.read_i2c_block_data(SHT35_ADDR, 0x00, 6)
@@ -28,8 +29,11 @@ def read_sht35_data(cmd=SHT35_CMD_READ_HIGH):
     
     return temp, humi
 
-# 主程序
-while True:
-    temperature, humidity = read_sht35_data()
-    print(f"Temperature: {temperature:.2f}°C, Humidity: {humidity:.2f}%")
-    time.sleep(15)
+async def main():
+    while True:
+        temperature, humidity = await read_sht35_data()
+        rprint(f"🌡️ Temperature: {temperature:.2f}°C  💧 Humidity: {humidity:.2f}%")
+        await asyncio.sleep(15)
+
+if __name__ == "__main__":
+    asyncio.run(main())

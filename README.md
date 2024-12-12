@@ -8,6 +8,19 @@ Indoor Thermal Environment Control System Based on Computer Vision
 bash run.sh
 ```
 
+## 开发要求
+
+使用 [rich](https://github.com/Textualize/rich) 打印规范:
+
+- 🌡️ 温度数据: `rprint("[red]Temperature: 25.6°C[/red]")`
+- 💧 湿度数据: `rprint("[blue]Humidity: 65.2%[/blue]")`
+- 🎯 检测结果: `rprint("[green]Detection: Person found[/green]")`
+- ⚠️ 警告信息: `rprint("[yellow]Warning: High temperature[/yellow]")`
+- ❌ 错误信息: `rprint("[bold red]Error: Camera not found[/bold red]")`
+- ℹ️ 普通信息: `rprint("[white]Info: System started[/white]")`
+- ✅ 成功信息: `rprint("[green]Success: Connected[/green]")`
+
+
 ## Roadmap
 
 ### 高优先级
