@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# 检查并安装 Python 3.10
-if ! command -v python3.10 &> /dev/null; then
-    echo "Installing Python 3.10..."
+# 检查并安装 Python 3.12 (最新稳定版本)
+if ! command -v python3.12 &> /dev/null; then
+    echo "Installing Python 3.12..."
     sudo apt update
-    sudo apt install -y python3.10 python3.10-venv python3.10-distutils
+    sudo apt install -y python3.12 python3.12-venv python3-distutils
 fi
 
 # 检查 VS Code 是否已安装
@@ -21,7 +21,7 @@ fi
 # 检查虚拟环境是否存在
 if [ ! -d "venv" ]; then
     echo "Creating virtual environment..."
-    python3.10 -m venv venv
+    python3.12 -m venv venv
 fi
 
 # 激活虚拟环境
@@ -29,8 +29,8 @@ source venv/bin/activate
 
 # 更新 pip 并安装依赖
 echo "Updating pip and installing requirements..."
-python3.10 -m pip install --upgrade pip
-python3.10 -m pip install -r requirements.txt
+python3.12 -m pip install --upgrade pip
+python3.12 -m pip install -r requirements.txt
 
 # 检查人脸特征点检测模型是否存在
 if [ ! -f "face_landmarker.task" ]; then
