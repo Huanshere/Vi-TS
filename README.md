@@ -3,9 +3,9 @@ Indoor Thermal Environment Control System Based on Computer Vision
 
 ## 快速开始
 
-安装环境:
+安装环境 并 启动:
 ```bash
-bash setup.sh
+bash onekey.sh
 ```
 
 ## Roadmap

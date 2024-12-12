@@ -15,7 +15,8 @@ NUM_FACES = 1
 MIN_FACE_DETECTION_CONFIDENCE = 0.75
 MIN_FACE_PRESENCE_CONFIDENCE = 0.75
 MIN_TRACKING_CONFIDENCE = 0.75
-CAMERA_ID = 2
+# 注意修改 cam id rpi 一般是 2 mac 上可能是 4 5
+CAMERA_ID = 5
 GAP = 5  # 每隔5秒保存一次
 
 # Drawing parameters
