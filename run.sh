@@ -48,4 +48,4 @@ else
 fi
 
 # 运行程序
-python thermal_face.py
+python3 thermal_face.py
