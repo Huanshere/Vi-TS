@@ -3,6 +3,6 @@ pythermalcomfort
 openai==1.55.3
 requests
 rich
-smbus; sys_platform == 'linux'
+# smbus; sys_platform == 'linux'
 python-dotenv
 opencv-python
