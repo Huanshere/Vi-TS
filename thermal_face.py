@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 import json
 from rich import print as rprint
+from check_cam import check_specific_cameras
 
 import mediapipe as mp
 from mediapipe.framework.formats import landmark_pb2
@@ -19,7 +20,11 @@ START_TIME = 0
 DETECTION_RESULT = None
 
 # Model parameters
-CAMERA_ID = 0
+try:
+    CAMERA_ID, _ = check_specific_cameras()
+except Exception as e:
+    rprint(f"[red]❌ 错误：无法找到合适的摄像头: {str(e)}[/red]")
+    sys.exit(1)
 GAP = 5  # 每隔5秒保存一次
 
 def save_result(result, unused_output_image, timestamp_ms):

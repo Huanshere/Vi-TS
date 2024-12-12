@@ -1,4 +1,5 @@
 import cv2
+from rich import print as rprint
 
 def check_specific_cameras():
     """
@@ -59,11 +60,11 @@ def check_specific_cameras():
 def main():
     try:
         cam_small, cam_large = check_specific_cameras()
-        print(f"✅ 找到符合要求的摄像头:")
-        print(f"- 256x384摄像头: /dev/video{cam_small}")
-        print(f"- 640x480摄像头: /dev/video{cam_large}")
+        rprint("[green]✅ Found matching cameras:[/green]")
+        rprint(f"[yellow]- Thermal Camera[/yellow] (256x384): [blue]/dev/video{cam_small}[/blue]")
+        rprint(f"[yellow]- RGB Camera[/yellow] (640x480): [blue]/dev/video{cam_large}[/blue]")
     except Exception as e:
-        print(f"❌ 错误: {str(e)}")
+        rprint(f"[red]❌ Error: {str(e)}[/red]")
 
 if __name__ == "__main__":
     main()
