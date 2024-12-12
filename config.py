@@ -3,29 +3,21 @@ import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 
-# Global variables
-COUNTER = 0
-FPS = 0
-START_TIME = 0
-DETECTION_RESULT = None
-
-# Model parameters
+# 模型参数
 MODEL = 'face_landmarker.task'
 NUM_FACES = 1
 MIN_FACE_DETECTION_CONFIDENCE = 0.75
 MIN_FACE_PRESENCE_CONFIDENCE = 0.75
 MIN_TRACKING_CONFIDENCE = 0.75
-CAMERA_ID = 2
-GAP = 5  # 每隔5秒保存一次
 
-# Drawing parameters
+# 绘制参数
 ROW_SIZE = 50
 LEFT_MARGIN = 24
 TEXT_COLOR = (0, 0, 0)
 FONT_SIZE = 1
 FONT_THICKNESS = 1
 FPS_AVG_FRAME_COUNT = 10
-
+    
 # MediaPipe face mesh parameters
 mp_face_mesh = mp.solutions.face_mesh
 mp_drawing = mp.solutions.drawing_utils

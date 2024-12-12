@@ -1,18 +1,26 @@
+# 系统相关
+import os
 import sys
 import time
 import cv2
 import numpy as np
 import json
-import os
+from rich import print as rprint
+
 import mediapipe as mp
 from mediapipe.framework.formats import landmark_pb2
 
-from config import (
-    COUNTER, FPS, START_TIME, DETECTION_RESULT, CAMERA_ID, ROW_SIZE,
-    LEFT_MARGIN, TEXT_COLOR, FONT_SIZE, FONT_THICKNESS, FPS_AVG_FRAME_COUNT,
-    mp_face_mesh, mp_drawing,mp_drawing_styles, options, detector, GAP,
-    get_landmark_temp
-)
+from config import *
+
+# Global variables
+COUNTER = 0
+FPS = 0
+START_TIME = 0
+DETECTION_RESULT = None
+
+# Model parameters
+CAMERA_ID = 0
+GAP = 5  # 每隔5秒保存一次
 
 def save_result(result, unused_output_image, timestamp_ms):
     global FPS, COUNTER, START_TIME, DETECTION_RESULT
@@ -82,6 +90,15 @@ def run():
                     # Display the temperature on the heatmap
                     temp_text = f"{keypoint_name}: {temp_avg} C"
                     cv2.putText(heatmap, temp_text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+                    
+                    # 添加 rprint 输出
+                    emoji_map = {
+                        'Nose': '👃',
+                        'Left Eye': '👁️',
+                        'Right Eye': '👁️',
+                        'Mouth': '👄'
+                    }
+                    rprint(f"{emoji_map[keypoint_name]} {keypoint_name}温度 | Temperature: [bold red]{temp_avg}°C[/]")
 
                     current_time = time.time()
                     if current_time - last_save_time >= GAP:

@@ -1,11 +1,14 @@
 import base64
-import json
 from openai import OpenAI
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # Initialize OpenAI client
 client = OpenAI(
-    api_key="sk-metuxbkousrnoflwciwwvifhqdmghzocttcpneyqtufwljia",
-    base_url="https://api.siliconflow.cn/v1"
+    api_key=os.getenv("OPENAI_API_KEY"),
+    base_url=os.getenv("OPENAI_BASE_URL")
 )
 
 # detail 参数会将图片分辨率向上取整到 28 倍数， 224 * 448 消耗 128tokens，对应 0.05 分 rmb
@@ -21,9 +24,9 @@ def encode_image(image_path: str) -> dict:
             }
         }
 
-def ask_vllm(image_paths: list, prompt: str, model:str="big") -> str:
+def ask_vllm(image_paths: list, prompt: str, model:str="pro") -> str:
     # Prepare messages with multiple images
-    model = "Qwen/Qwen2-VL-72B-Instruct" if model == "big" else "Pro/Qwen/Qwen2-VL-7B-Instruct"
+    model = "Qwen/Qwen2-VL-72B-Instruct" if model == "pro" else "Pro/Qwen/Qwen2-VL-7B-Instruct"
     messages = [encode_image(path) for path in image_paths]
     
     # Add the text prompt
@@ -52,4 +55,4 @@ def ask_vllm(image_paths: list, prompt: str, model:str="big") -> str:
 if __name__ == "__main__":
     image_paths = ["llm/demo.png"]
     prompt = "详细描述图中人物的所有服装，并估算服装热阻，单位 clo"
-    ask_vllm(image_paths, prompt, model="big")
+    ask_vllm(image_paths, prompt, model="pro")

@@ -4,14 +4,8 @@ import cv2
 import mediapipe as mp
 from mediapipe.framework.formats import landmark_pb2
 
-from config import (
-    COUNTER, FPS, START_TIME, DETECTION_RESULT, 
-    CAMERA_ID, WIDTH, HEIGHT,
-    ROW_SIZE, LEFT_MARGIN, TEXT_COLOR, FONT_SIZE, FONT_THICKNESS, 
-    FPS_AVG_FRAME_COUNT, LABEL_BACKGROUND_COLOR, LABEL_PADDING_WIDTH,
-    mp_face_mesh, mp_drawing, mp_drawing_styles,
-    options, detector
-)
+from config import *
+from thermal_face import *
 
 def save_result(result, unused_output_image, timestamp_ms):
     global FPS, COUNTER, START_TIME, DETECTION_RESULT
@@ -27,8 +21,8 @@ def run():
     options.result_callback = save_result
 
     cap = cv2.VideoCapture(CAMERA_ID)
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, WIDTH)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, HEIGHT)
+    # cap.set(cv2.CAP_PROP_FRAME_WIDTH, WIDTH)
+    # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, HEIGHT)
 
     while cap.isOpened():
         success, image = cap.read()
