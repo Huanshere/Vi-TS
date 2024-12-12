@@ -1,6 +1,2 @@
-# 虚拟环境
-venv/
-
-# 忽略特定文件
-face_landmarker.task
-.aider*
+log/
+__pycache__/
