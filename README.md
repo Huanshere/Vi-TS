@@ -1,7 +1,15 @@
 # 基于计算机视觉的室内热环境控制系统
-Indoor Thermal Environment Control System Based on Computer Vision
+树莓派 + 热成像摄像头 + 摄像头
 
 ## 快速开始
+
+### 前置准备
+
+1. 在树莓派上启用 I2C 接口:
+   ```bash
+   sudo raspi-config
+   ```
+   进入 `Interfacing Options` > `I2C` > 选择 `Yes` 启用
 
 安装环境 并 启动:
 ```bash
