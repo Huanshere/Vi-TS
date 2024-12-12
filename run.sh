@@ -35,7 +35,7 @@ if [ "$answer" = "y" ]; then
 
     # 直接安装依赖
     echo "Installing requirements..."
-    sudo pip3 install -r requirements.txt
+    python3 -m pip install --break-system-packages -r requirements.txt
 
     # 检查人脸特征点检测模型是否存在
     if [ ! -f "face_landmarker.task" ]; then
