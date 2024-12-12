@@ -16,6 +16,12 @@ if [ "$answer" = "y" ]; then
         sudo apt install -y python3 python3-distutils
     fi
 
+    # 检查并安装 pip
+    if ! command -v pip3 &> /dev/null; then
+        echo "Installing pip..."
+        sudo apt install -y python3-pip
+    fi
+
     # 检查 VS Code 是否已安装
     if ! command -v code &> /dev/null; then
         echo "Installing Visual Studio Code..."
