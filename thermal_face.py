@@ -11,7 +11,7 @@ from check_cam import check_specific_cameras
 import mediapipe as mp
 from mediapipe.framework.formats import landmark_pb2
 
-from config import *
+from face_detect_setting import *
 
 # Global variables
 COUNTER = 0

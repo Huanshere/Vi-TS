@@ -4,7 +4,7 @@ import cv2
 import mediapipe as mp
 from mediapipe.framework.formats import landmark_pb2
 
-from config import *
+from face_detect_setting import *
 from thermal_face import *
 
 def save_result(result, unused_output_image, timestamp_ms):
