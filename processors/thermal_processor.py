@@ -9,6 +9,7 @@ from utils.check_cam import check_specific_cameras
 from configs.face_detect_setting import *
 
 THERMAL_SAVE_GAP = 5  # 每隔5秒保存一次
+FIX_FPS = 10 # 限制固定帧率
 
 # Global variables
 COUNTER = 0
@@ -35,12 +36,21 @@ def save_result(result, unused_output_image, timestamp_ms):
 
 def run():
     last_save_time = time.time()
+    last_frame_time = time.time()
+    frame_interval = 1.0 / FIX_FPS 
+    
     options.result_callback = save_result
     # 打开摄像头
     cap = cv2.VideoCapture('/dev/video' + str(CAMERA_ID), cv2.CAP_V4L)
     cap.set(cv2.CAP_PROP_CONVERT_RGB, 0.0)
 
     while cap.isOpened():
+        current_time = time.time()
+        # 如果距离上一帧处理时间不到，则跳过当前帧
+        if current_time - last_frame_time < frame_interval:
+            continue
+            
+        last_frame_time = current_time
         success, frame = cap.read()
         if not success:
             sys.exit('ERROR: Unable to read from thermal camera.')
