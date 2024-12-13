@@ -1,13 +1,16 @@
 from dotenv import load_dotenv
 import requests
 import json
-import os
 import cv2
 import base64
 from pathlib import Path
 from datetime import datetime
 from rich import print as rprint
 import json_repair
+
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from ai.prompts import get_analyze_clothing_prompt, get_analyze_video_prompt
 
 load_dotenv()
 MODEL = "gemini-2.0-flash-exp"
@@ -43,8 +46,7 @@ def log_consumption(file_path: str, response: dict, log_title: str = "video_302"
     logs.append({
         "timestamp": datetime.now().isoformat(),
         "file_path": file_path,
-        "response": response,
-        "token_stats": response.get("usage", {})
+        "response": response
     })
     
     json.dump(logs, log_file.open('w', encoding="utf-8"), ensure_ascii=False, indent=2)
@@ -102,20 +104,20 @@ def analyze_image(image_path: str, prompt_text: str = "Analyze this image:") -> 
     return result
 
 if __name__ == "__main__":
-    video_path = "llm/test_data/fanning.mp4"
-    prompt = "请分析这个视频中的人在做什么动作，是否和热舒适状态有关，用 JSON 格式回答: {{'content': '视频描述', 'thermal_comfort': '是否和热舒适状态有关'}}"
+    video_path = "ai/test_data/fanning.mp4"
+    prompt = get_analyze_video_prompt()
     
     rprint("\n🎬 [bold cyan]Starting Video Analysis[/]\n")
-    result = analyze_video(video_path, prompt, fps=3)
+    result = analyze_video(video_path, prompt, fps=5)
     
     rprint("\n📊 [bold magenta]Analysis Results:[/]")
     content = result.get("choices", [{}])[0].get("message", {}).get("content", "")
     rprint(f"[green]{json.dumps(json_repair.loads(content), indent=2, ensure_ascii=False)}[/]")
 
-    img_path = "llm/test_data/cloth.png"
-    prompt = "请分析这张图片中的人的衣着，然后计算服装热阻 clo，用 JSON 格式回答: {{'content': '图片描述','clo': '服装热阻'}}"
-    rprint("\n🖼️ [bold cyan]Starting Image Analysis[/]\n")
-    result = analyze_image(img_path, prompt)
-    rprint("\n📊 [bold magenta]Analysis Results:[/]")
-    content = result.get("choices", [{}])[0].get("message", {}).get("content", "")
-    rprint(f"[green]{json.dumps(json_repair.loads(content), indent=2, ensure_ascii=False)}[/]")
+    # img_path = "ai/test_data/cloth.png"
+    # prompt = get_analyze_clothing_prompt()
+    # rprint("\n🖼️ [bold cyan]Starting Image Analysis[/]\n")
+    # result = analyze_image(img_path, prompt)
+    # rprint("\n📊 [bold magenta]Analysis Results:[/]")
+    # content = result.get("choices", [{}])[0].get("message", {}).get("content", "")
+    # rprint(f"[green]{json.dumps(json_repair.loads(content), indent=2, ensure_ascii=False)}[/]")
