@@ -48,19 +48,23 @@ def get_landmark_temp(landmark_id, face_landmarks, heatmap, thdata):
     HEIGHT, WIDTH, _ = heatmap.shape
     x, y = int(landmark.x * WIDTH), int(landmark.y * HEIGHT)
 
+    # 确保坐标不超出 thdata 的范围
+    y = min(max(y, 0), thdata.shape[0] - 1)
+    x = min(max(x, 0), thdata.shape[1] - 1)
+
     temp_matrix = []
     for i in range(-1, 2):
         row = []
         for j in range(-1, 2):
             tx, ty = x + j, y + i
-            # 如果 tx 或 ty 超出范围，用中心值替代
-            if tx < 0 or tx >= WIDTH or ty < 0 or ty >= HEIGHT:
-                temp = (thdata[y][x][0] + thdata[y][x][1] * 256) / 64 - 273.15
-            else:
-                temp = (thdata[ty][tx][0] + thdata[ty][tx][1] * 256) / 64 - 273.15
+            # 检查坐标是否在 thdata 的有效范围内
+            if tx < 0 or tx >= thdata.shape[1] or ty < 0 or ty >= thdata.shape[0]:
+                continue  # 跳过超出范围的点
+            temp = (thdata[ty][tx][0] + thdata[ty][tx][1] * 256) / 64 - 273.15
             temp = round(temp, 2)
             row.append(temp)
-        temp_matrix.append(row)
+        if row:  # 只有当行中有有效数据时才添加
+            temp_matrix.append(row)
     
     # 移除离群值并计算平均温度
     temps = [temp for row in temp_matrix for temp in row]
