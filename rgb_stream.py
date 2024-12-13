@@ -4,12 +4,14 @@ import time
 import os
 from datetime import datetime
 from rich import print as rprint
+import platform
 
 from llm.analyze_video_302 import analyze_video
 
 # 配置参数
-ROTATION = 0
+ROTATION = 180 if platform.system() == 'Linux' else 0 #! 我的 linux 上 cam 装反了
 VIDEO_DURATION = 5  # 视频片段时长(秒)
+
 VIDEO_RATIO = 16/9  # 视频比例 16:9
 SAVE_RESOLUTION = (640, int(640/VIDEO_RATIO))  # 约为 (640, 360)
 
@@ -17,6 +19,8 @@ VIDEO_DIR = "log/video/"
 IMAGE_DIR = "log/image/"
 
 PROCESS_WORKER_COUNT = 6
+IMAGE_ANALYZE_GAP = 15  # 每 15 秒分析一次图片
+ANALYZE_FPS = 3
 SAVE_FPS = 5
 
 def ensure_output_dirs():
@@ -89,7 +93,7 @@ def process_video_worker(frames, timestamp):
     # 分析视频
     rprint(f"\n🎬 [bold blue]Starting video analysis:[/] {video_path}")
     prompt = "请分析这个视频中的人在做什么动作，是否和热舒适状态有关，用 json 格式回答{{'content': '视频描述'}}"
-    result = analyze_video(video_path, prompt)
+    result = analyze_video(video_path, prompt, fps=ANALYZE_FPS)
     
     if "error" in result:
         rprint(f"❌ [bold red]Analysis failed:[/] {result['error']}")
