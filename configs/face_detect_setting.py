@@ -2,6 +2,7 @@ import cv2
 import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
+from mediapipe.framework.formats import landmark_pb2
 
 # 模型参数
 # 从 https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task 获得

@@ -1,15 +1,11 @@
-import os
-import sys
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import time
 import cv2
 import numpy as np
 import json
 from rich import print as rprint
 from utils.check_cam import check_specific_cameras
-
-import mediapipe as mp
-from mediapipe.framework.formats import landmark_pb2
-
 from configs.face_detect_setting import *
 
 THERMAL_SAVE_GAP = 5  # 每隔5秒保存一次
