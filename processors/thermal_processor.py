@@ -17,6 +17,21 @@ FPS = 0
 START_TIME = 0
 DETECTION_RESULT = None
 
+# Constants
+FACE_KEYPOINTS = {
+    1: 'Nose',  
+    33: 'Left Eye',
+    263: 'Right Eye', 
+    13: 'Mouth'
+}
+
+EMOJI_MAP = {
+    'Nose': '👃',
+    'Left Eye': '👁️',
+    'Right Eye': '👁️',
+    'Mouth': '👄'
+}
+
 # Model parameters
 try:
     CAMERA_ID, _ = check_specific_cameras()
@@ -91,8 +106,7 @@ def run():
                 )
 
                 # 获取并保存面部温度
-                face_keypoints = {10: 'Nose', 234: 'Left Eye', 454: 'Right Eye', 152: 'Mouth'}
-                for keypoint_id, keypoint_name in face_keypoints.items():
+                for keypoint_id, keypoint_name in FACE_KEYPOINTS.items():
                     temp_avg, temp_matrix = get_landmark_temp(keypoint_id, face_landmarks, heatmap, thdata)
 
                     # Get the coordinates for placing the text
@@ -104,13 +118,7 @@ def run():
                     cv2.putText(heatmap, temp_text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
                     
                     # 添加 rprint 输出
-                    emoji_map = {
-                        'Nose': '👃',
-                        'Left Eye': '👁️',
-                        'Right Eye': '👁️',
-                        'Mouth': '👄'
-                    }
-                    rprint(f"{emoji_map[keypoint_name]} {keypoint_name}温度 | Temperature: [bold red]{temp_avg}°C[/]")
+                    rprint(f"{EMOJI_MAP[keypoint_name]} {keypoint_name}温度 | Temperature: [bold red]{temp_avg}°C[/]")
 
                     current_time = time.time()
                     if current_time - last_save_time >= THERMAL_SAVE_GAP:
