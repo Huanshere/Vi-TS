@@ -18,7 +18,7 @@ def calculate_cost(token_stats: dict) -> float:
     """
     input_tokens = token_stats["input_tokens"] + token_stats["prompt_tokens"]
     output_tokens = token_stats["completion_tokens"]
-    return (input_tokens * 1.5 + output_tokens * 5) / 1000000
+    return (input_tokens * 0.15 + output_tokens * 0.6) / 1000000
 
 def log_consumption(video_path: str, response: str, token_stats: dict, cost: float):
     """记录API调用消费
@@ -52,27 +52,17 @@ def log_consumption(video_path: str, response: str, token_stats: dict, cost: flo
     with open(log_file, "w", encoding="utf-8") as f:
         json.dump(logs, f, ensure_ascii=False, indent=2)
 
-def analyze_video(video_path: str, prompt_text: str = "请分析以下视频内容：", model: str = "pro") -> dict:
+def analyze_video(video_path: str, prompt_text: str = "请分析以下视频内容：") -> dict:
     """
     使用 Gemini API 分析视频文件
     
     Args:
         video_path: 视频文件路径 (仅支持 .mp4 格式)
         prompt_text: 提示文本，默认为"请分析以下视频内容："
-        model: 模型选择，可选 "lite" 或 "pro"，默认为 "pro"
     
     Returns:
         dict: 包含分析结果和token统计的字典
     """
-    # 模型名称映射
-    model_mapping = {
-        "lite": "gemini-1.5-flash",
-        "pro": "gemini-1.5-pro"
-    }
-    
-    # 获取实际的模型名称
-    model_name = model_mapping[model]
-        
     try:
         with open(video_path, "rb") as video_file:
             video_content = video_file.read()
@@ -83,8 +73,7 @@ def analyze_video(video_path: str, prompt_text: str = "请分析以下视频内�
                 }
             }
             
-        # genai
-        model = genai.GenerativeModel(model_name)
+        model = genai.GenerativeModel("gemini-2.0-flash-exp")
         response = model.generate_content([prompt_text, video_data])
         
         # 获取完整的token使用统计
@@ -115,7 +104,7 @@ if __name__ == "__main__":
     # 使用示例：
     video_path = "llm/test_data/fanning.mp4"
     prompt = "请分析这个视频中的人在做什么动作，是否和热舒适状态有关，用 json 格式回答{{'content': '视频描述'}}"
-    result = analyze_video(video_path, prompt, model="pro")
+    result = analyze_video(video_path, prompt)
     print(result["content"])  # 打印分析结果
     print("Token统计:", result["token_stats"])  # 打印token统计信息
     print(f"花费 $ {result['cost_usd']:.6f}")

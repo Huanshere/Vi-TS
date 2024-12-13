@@ -4,11 +4,11 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-
+silicon_url = "https://api.siliconflow.cn/v1"
 # Initialize OpenAI client
 client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY"),
-    base_url=os.getenv("OPENAI_BASE_URL")
+    api_key=os.getenv("SILICON_API_KEY"),
+    base_url=silicon_url
 )
 
 # detail 参数会将图片分辨率向上取整到 28 倍数， 224 * 448 消耗 128tokens，对应 0.05 分 rmb
