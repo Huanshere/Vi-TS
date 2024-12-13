@@ -4,7 +4,8 @@ from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 
 # 模型参数
-MODEL = 'model/face_landmarker.task'
+# 从 https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task 获得
+MODEL = 'configs/face_landmarker.task'
 NUM_FACES = 1
 MIN_FACE_DETECTION_CONFIDENCE = 0.75
 MIN_FACE_PRESENCE_CONFIDENCE = 0.75

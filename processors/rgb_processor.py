@@ -1,4 +1,4 @@
-from cam_utils.rgb_utils import *
+from utils.rgb_cam_utils import *
 from multiprocessing import Queue, Process, Pool
 import time
 import os

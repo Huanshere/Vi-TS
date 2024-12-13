@@ -6,7 +6,7 @@ def init_camera():
     system = platform.system()
     if system == "Linux":
         # Linux: 使用 check_cameras 获取摄像头 ID
-        from check_cam import check_specific_cameras
+        from utils.check_cam import check_specific_cameras
         _, rgb_cam_id = check_specific_cameras()
         cap = cv2.VideoCapture('/dev/video' + str(rgb_cam_id))
     elif system == "Darwin" or system == "Windows":
@@ -38,3 +38,11 @@ def rotate_frame(frame, rotation):
     elif rotation == 270:
         return cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
     return frame
+
+if __name__ == "__main__":
+    cap = init_camera()
+    while True:
+        ret, frame = cap.read()
+        cv2.imshow("frame", frame)
+        cv2.waitKey(1)
+

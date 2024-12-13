@@ -1,4 +1,3 @@
-# 系统相关
 import os
 import sys
 import time
@@ -6,12 +5,14 @@ import cv2
 import numpy as np
 import json
 from rich import print as rprint
-from check_cam import check_specific_cameras
+from utils.check_cam import check_specific_cameras
 
 import mediapipe as mp
 from mediapipe.framework.formats import landmark_pb2
 
-from face_detect_setting import *
+from configs.face_detect_setting import *
+
+THERMAL_SAVE_GAP = 5  # 每隔5秒保存一次
 
 # Global variables
 COUNTER = 0
@@ -25,7 +26,7 @@ try:
 except Exception as e:
     rprint(f"[red]❌ 错误：无法找到合适的摄像头: {str(e)}[/red]")
     sys.exit(1)
-GAP = 5  # 每隔5秒保存一次
+
 
 def save_result(result, unused_output_image, timestamp_ms):
     global FPS, COUNTER, START_TIME, DETECTION_RESULT
@@ -106,7 +107,7 @@ def run():
                     rprint(f"{emoji_map[keypoint_name]} {keypoint_name}温度 | Temperature: [bold red]{temp_avg}°C[/]")
 
                     current_time = time.time()
-                    if current_time - last_save_time >= GAP:
+                    if current_time - last_save_time >= THERMAL_SAVE_GAP:
                         log_data = {
                             "timestamp": current_time,
                             "temperature": temp_avg,

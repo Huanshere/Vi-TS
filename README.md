@@ -15,6 +15,7 @@
 ```bash
 bash run.sh
 ```
+该脚本会安装 python, pip, vscode, 并 安装依赖
 
 ## 开发要求
 
@@ -28,6 +29,38 @@ bash run.sh
 - ℹ️ 普通信息: `rprint("[white]Info: System started[/white]")`
 - ✅ 成功信息: `rprint("[green]Success: Connected[/green]")`
 
+## 项目结构
+
+```
+Vi-TS/
+├── ai/                        # AI 模型和分析相关
+│   ├── analyze_video_302.py  # 使用 302.ai API 分析视频和图片
+│   ├── prompts.py            # AI 模型提示词管理
+│   └── _analyze_qwen.py      # 通义千问视觉模型分析（备用）
+│
+├── configs/                   # 配置文件
+│   └── face_detect_setting.py # 人脸检测和温度分析配置
+│
+├── processors/                # 数据处理模块
+│   ├── rgb_processor.py      # RGB 摄像头数据处理
+│   ├── sensor_processor.py   # SHT35 温湿度传感器数据处理
+│   └── thermal_processor.py  # 热成像摄像头数据处理
+│
+├── utils/                     # 工具函数
+│   ├── check_cam.py          # 摄像头检测工具
+│   └── rgb_cam_utils.py      # RGB 摄像头工具函数
+│
+└── run.sh                    # 项目启动脚本
+```
+
+每个模块的主要功能：
+
+- **ai/**: 负责视频分析、图像理解等 AI 相关功能
+- **configs/**: 存放各类配置文件，如人脸检测参数等
+- **processors/**: 处理各类传感器数据，包括视频流、温度数据等
+- **utils/**: 提供各类工具函数，如摄像头初始化等
+
+详见 [技术文档](TECH.md)
 
 ## Roadmap
 
