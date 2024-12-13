@@ -39,6 +39,28 @@ def rotate_frame(frame, rotation):
         return cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
     return frame
 
+def save_video(frames, video_path, fps, resolution):
+    """保存视频帧到文件"""
+    width, height = resolution
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = cv2.VideoWriter(video_path, fourcc, fps, (width, height))
+    
+    for frame in frames:
+        resized_frame = cv2.resize(frame, resolution)
+        out.write(resized_frame)
+    out.release()
+    rprint(f"💾 [bold green]Saved video clip:[/] {video_path}")
+
+def save_image(frame, image_path):
+    """保存单帧图像到文件"""
+    cv2.imwrite(image_path, frame)
+    rprint(f"💾 [bold green]Saved image:[/] {image_path}")
+
+def get_timestamp():
+    """获取当前时间戳字符串"""
+    from datetime import datetime
+    return datetime.now().strftime("%Y%m%d_%H%M%S")
+
 if __name__ == "__main__":
     cap = init_camera()
     while True:

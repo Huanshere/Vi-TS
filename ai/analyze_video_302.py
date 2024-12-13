@@ -70,28 +70,29 @@ def analyze_frames(frames: list, prompt_text: str = "Analyze the following image
         response = requests.post(URL, headers=headers, json=payload)
         response.raise_for_status()
         rprint("✅ [bold green]Analysis completed successfully![/]")
-        return response.json()
+        result = json_repair.loads(response.json().get("choices", [{}])[0].get("message", {}).get("content", ""))
+        return result
     except Exception as e:
         error_msg = f"❌ Processing failed: {str(e)}"
         rprint(f"[bold red]{error_msg}[/]")
         return {"error": error_msg}
 
-def analyze_video(video_path: str, prompt_text: str = "Analyze the following video:", fps: int = 5) -> dict:
+def analyze_video(video_path: str, fps: int = 5, print_result: bool = True) -> dict:
     """分析视频帧"""
-    rprint("🎥 [bold cyan]Extracting frames from video...[/]")
+    rprint(f"\n🎬 [bold cyan]Starting Video Analysis <{video_path}> ...[/]")
     frames = extract_frames(video_path, fps)
-    rprint(f"✨ [bold green]Successfully extracted {len(frames)} frames[/]")
+    rprint(f"✨ [bold green]Successfully extracted <{len(frames)}> frames[/]")
     
-    result = analyze_frames(frames, prompt_text)
-    
-    if "error" not in result:
-        rprint("📝 [bold cyan]Logging consumption data...[/]")
-        log_consumption(video_path, result, log_title="video_302")
-    
+    prompt = get_analyze_video_prompt()
+    result = analyze_frames(frames, prompt)
+    log_consumption(video_path, result, log_title="video_302")
+    if print_result:
+        rprint(f"[green]{json.dumps(result, indent=2, ensure_ascii=False)}[/]")
     return result
 
-def analyze_image(image_path: str, prompt_text: str = "Analyze this image:") -> dict:
+def analyze_image(image_path: str, print_result: bool = True) -> dict:
     """分析单张图片"""
+    rprint(f"\n🖼️ [bold cyan]Starting Image Analysis <{image_path}> ...[/]")
     image = cv2.imread(image_path)
     _, buffer = cv2.imencode('.jpg', image)
     frames = [{
@@ -99,25 +100,16 @@ def analyze_image(image_path: str, prompt_text: str = "Analyze this image:") -> 
         "image_url": {"url": f"data:image/jpeg;base64,{base64.b64encode(buffer).decode('utf-8')}"}
     }]
     rprint("🖼️ [bold blue]Processing image...[/]")
-    result = analyze_frames(frames, prompt_text)
+    prompt = get_analyze_clothing_prompt()
+    result = analyze_frames(frames, prompt)
     log_consumption(image_path, result, log_title="image_302")
+    if print_result:
+        rprint(f"[green]{json.dumps(result, indent=2, ensure_ascii=False)}[/]")
     return result
 
 if __name__ == "__main__":
     video_path = "ai/test_data/fanning.mp4"
-    prompt = get_analyze_video_prompt()
-    
-    rprint("\n🎬 [bold cyan]Starting Video Analysis[/]\n")
-    result = analyze_video(video_path, prompt, fps=5)
-    
-    rprint("\n📊 [bold magenta]Analysis Results:[/]")
-    content = result.get("choices", [{}])[0].get("message", {}).get("content", "")
-    rprint(f"[green]{json.dumps(json_repair.loads(content), indent=2, ensure_ascii=False)}[/]")
+    result = analyze_video(video_path, fps=5)
 
-    # img_path = "ai/test_data/cloth.png"
-    # prompt = get_analyze_clothing_prompt()
-    # rprint("\n🖼️ [bold cyan]Starting Image Analysis[/]\n")
-    # result = analyze_image(img_path, prompt)
-    # rprint("\n📊 [bold magenta]Analysis Results:[/]")
-    # content = result.get("choices", [{}])[0].get("message", {}).get("content", "")
-    # rprint(f"[green]{json.dumps(json_repair.loads(content), indent=2, ensure_ascii=False)}[/]")
+    img_path = "ai/test_data/cloth.png"
+    result = analyze_image(img_path)
