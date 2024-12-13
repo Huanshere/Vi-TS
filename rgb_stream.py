@@ -10,12 +10,13 @@ from llm.analyze_video_302 import analyze_video
 # 配置参数
 ROTATION = 0
 VIDEO_DURATION = 5  # 视频片段时长(秒)
+VIDEO_RATIO = 16/9  # 视频比例 16:9
+SAVE_RESOLUTION = (640, int(640/VIDEO_RATIO))  # 约为 (640, 360)
 
 VIDEO_DIR = "log/video/"
 IMAGE_DIR = "log/image/"
 
 PROCESS_WORKER_COUNT = 6
-SAVE_RESOLUTION = (640, 360)
 SAVE_FPS = 5
 
 def ensure_output_dirs():
