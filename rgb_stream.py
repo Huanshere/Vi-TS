@@ -3,19 +3,20 @@ from multiprocessing import Queue, Process, Pool
 import time
 import os
 from datetime import datetime
+from rich import print as rprint
 
-from llm.analyze_video import analyze_video
+from llm.analyze_video_302 import analyze_video
 
 # 配置参数
-ROTATION = 180
-VIDEO_DURATION = 10  # 视频片段时长(秒)
+ROTATION = 0
+VIDEO_DURATION = 5  # 视频片段时长(秒)
 
 VIDEO_DIR = "log/video/"
 IMAGE_DIR = "log/image/"
 
 PROCESS_WORKER_COUNT = 6
-SAVE_RESOLUTION = (426, 240)
-SAVE_FPS = 10
+SAVE_RESOLUTION = (640, 360)
+SAVE_FPS = 5
 
 def ensure_output_dirs():
     """确保输出目录存在"""
@@ -82,13 +83,18 @@ def process_video_worker(frames, timestamp):
         out.write(resized_frame)
     out.release()
 
-    print(f"保存视频片段: {video_path}")
+    rprint(f"💾 [bold green]Saved video clip:[/] {video_path}")
 
     # 分析视频
-    print(f"开始分析视频片段: {video_path}")
+    rprint(f"\n🎬 [bold blue]Starting video analysis:[/] {video_path}")
     prompt = "请分析这个视频中的人在做什么动作，是否和热舒适状态有关，用 json 格式回答{{'content': '视频描述'}}"
-    result = analyze_video(video_path, prompt, model="pro")
-    print(f"分析视频片段: {video_path}, 完成, 结果: {result['content']}")
+    result = analyze_video(video_path, prompt)
+    
+    if "error" in result:
+        rprint(f"❌ [bold red]Analysis failed:[/] {result['error']}")
+    else:
+        rprint(f"✅ [bold green]Analysis completed:[/] {video_path}")
+        rprint(f"📊 [bold cyan]Results:[/] {result['content']}")
 
 def process_video(video_q):
     """视频处理消费者进程"""

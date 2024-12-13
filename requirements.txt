@@ -6,4 +6,5 @@ rich
 smbus; sys_platform == 'linux'
 python-dotenv
 opencv-python
-google-generativeai
+# google-generativeai
+json_repair
